@@ -2,6 +2,7 @@ package controller;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.List;
 import model.CRUD.BoissonCRUD;
 import model.CRUD.SandwichCRUD;
 import model.CRUD.StockBoissonCRUD;
@@ -19,7 +20,7 @@ public class DistributeurController {
     private final SandwichCRUD sandwichCRUD;
     private final BoissonCRUD boissonCRUD;
     private final DistributeurView distributeurView;
-    private ArrayList<SandwichController> sandwichControllers;
+    private ArrayList<List<SandwichController>> sandwichControllers;
     
     public DistributeurController(Connection connection){
         this.connection=connection;
@@ -29,15 +30,18 @@ public class DistributeurController {
         sandwichCRUD=new SandwichCRUD(this.connection);
         boissonCRUD=new BoissonCRUD(this.connection);
         
-        sandwichControllers=new ArrayList<SandwichController>();
+        sandwichControllers=new ArrayList<List<SandwichController>>();
         
         ArrayList<StockSandwich> lst=new ArrayList<StockSandwich>();
         lst=stockSandwichCRUD.getAllStock();
+        int i=0;
         for(StockSandwich st:lst){
-            for(int i=0; i<st.getQuantity(); i++){
+            sandwichControllers.add(new ArrayList<SandwichController>());
+            for(int j=0; j<st.getQuantity(); j++){
                 Sandwich s=sandwichCRUD.getSandwichByID(st.getID());
-                sandwichControllers.add(new SandwichController(s));
+                sandwichControllers.get(i).add(new SandwichController(s, connection));
             }
+            i++;
         }
     }
     
@@ -45,10 +49,15 @@ public class DistributeurController {
         return distributeurView;
     }
     
-    public ArrayList<SandwichView> getAllSandwichViews(){
-        ArrayList<SandwichView> lsv=new ArrayList<SandwichView>();
-        for(SandwichController s:sandwichControllers){
-            lsv.add(s.getSandwichView());
+    public ArrayList<List<SandwichView>> getAllSandwichViews(){
+        ArrayList<List<SandwichView>> lsv=new ArrayList<List<SandwichView>>();
+        int i=0;
+        for(List<SandwichController> ls:sandwichControllers){
+            lsv.add(new ArrayList<SandwichView>());
+            for(SandwichController sv:ls){
+                lsv.get(i).add(sv.getSandwichView());
+            }
+            i++;
         }
         return lsv;
     }

@@ -1,8 +1,20 @@
 package view;
 
 import java.util.ArrayList;
+import java.util.List;
+import javafx.animation.ParallelTransition;
+import javafx.animation.PathTransition;
+import javafx.animation.RotateTransition;
+import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.effect.Light.Point;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.CubicCurveTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
 import javafx.util.Duration;
 
 public class GeneralView extends Pane{
@@ -13,15 +25,13 @@ public class GeneralView extends Pane{
     private LeftCoverView leftCoverView;
     private RightCoverView rightCoverView;
     
-    private ArrayList<SandwichView> sandwichViews;
+    private ArrayList<List<SandwichView>> sandwichViews;
     
-    private final TranslateTransition leftCoverTT;
-    private final TranslateTransition rightCoverTT;
+    private final int[][] Positions;
+    private final ArrayList<List<Point>> sandwichPositions;
     
-    private final int[][] sandwitchPositions;
-    
-    public GeneralView(DistributeurView distributeurView, ArrayList<SandwichView> sandwichViews){
-        sandwitchPositions=new int[][]{
+    public GeneralView(DistributeurView distributeurView, ArrayList<List<SandwichView>> sandwichViews){
+        Positions=new int[][]{
             {237, 103}, {332, 103}, {427, 103},
             {237, 182}, {332, 182}, {427, 182},
             {237, 255}, {332, 255}, {427, 255},
@@ -29,6 +39,17 @@ public class GeneralView extends Pane{
             {237, 407}, {332, 407}, {427, 407},
             {237, 483}, {332, 483}, {427, 483},
         };
+        sandwichPositions=new ArrayList<List<Point>>();
+        for(int i=0; i<18; i+=3){
+            List<Point> l=new ArrayList<Point>();
+            Point p=new Point(); p.setX(Positions[i][0]); p.setY(Positions[i][1]);
+            l.add(p);
+            p=new Point(); p.setX(Positions[i+1][0]); p.setY(Positions[i+1][1]);
+            l.add(p);
+            p=new Point(); p.setX(Positions[i+2][0]); p.setY(Positions[i+2][1]);
+            l.add(p);
+            sandwichPositions.add(l);
+        }
         
         leftGlareView=new LeftGlareView();
         rightGlareView=new RightGlareView();
@@ -40,98 +61,76 @@ public class GeneralView extends Pane{
         this.sandwichViews=sandwichViews;
         
         int i=0;
-        for(SandwichView sv:sandwichViews){
-            sv.setX(sandwitchPositions[i][0]);
-            sv.setY(sandwitchPositions[i][1]);
-            sv.setOpacity(0.65);
-            i++;
+        for(List<SandwichView> lsv:sandwichViews){
+            for(SandwichView s: lsv){
+                s.setX(sandwichPositions.get(s.getType()).get(i).getX());
+                s.setY(sandwichPositions.get(s.getType()).get(i).getY());
+                s.setOpacity(0.65);
+                i++;
+            }
+            i=0;
         }
-//        this.stockSandwichs=stockSandwichs;
-//        this.stockBoissons=stockBoissons;
         
-//        for(StockSandwich s : this.stockSandwichs){
-//            switch (s.getSandwichName()){
-//                case "sandwichBoeuf":
-//                    for(int i=0; i<s.getQuantity(); i++){
-//                        SandwichBoeufView sbv=new SandwichBoeufView();
-//                        sbv.setX(sandwitchPositions[i][0]);
-//                        sbv.setY(sandwitchPositions[i][1]);
-//                        sbv.setOpacity(0.65);
-//                        sandwichBoeufViews.add(sbv);
-//                    }
-//                    break;
-//                case "paniniOmelette":
-//                    for(int i=0; i<s.getQuantity(); i++){
-//                        PaniniOmeletteView pv=new PaniniOmeletteView();
-//                        pv.setX(sandwitchPositions[i+3][0]);
-//                        pv.setY(sandwitchPositions[i+3][1]);
-//                        pv.setOpacity(0.6);
-//                        paniniOmeletteViews.add(pv);
-//                    }
-//                    break;
-//                case "c":
-//                    for(int i=0; i<s.getQuantity(); i++){
-//                        
-//                    }
-//                    break;
-//                case "d":
-//                    for(int i=0; i<s.getQuantity(); i++){
-//                        
-//                    }
-//                    break;
-//                case "e":
-//                    for(int i=0; i<s.getQuantity(); i++){
-//                        
-//                    }
-//                    break;
-//                case "f":
-//                    for(int i=0; i<s.getQuantity(); i++){
-//                        
-//                    }
-//                    break;
-//                default:
-//                    break;
+//        int i=0;
+//        for(List<SandwichView> lsv:sandwichViews){
+//            for(SandwichView sv:lsv){
+//                sv.setX(sandwitchPositions[sv.getType()][0]);
+//                sv.setY(sandwitchPositions[sv.getType()][1]);
+//                sv.setOpacity(0.65);
 //            }
 //        }
         
+//        int i=0;
+//        for(SandwichView sv:sandwichViews){
+//            sv.setX(sandwitchPositions[i][0]);
+//            sv.setY(sandwitchPositions[i][1]);
+//            sv.setOpacity(0.65);
+//            i++;
+//        }
+        
         getChildren().add(this.distributeurView);
-        getChildren().addAll(this.sandwichViews);
+        for(List<SandwichView> lsv:sandwichViews){
+            getChildren().addAll(lsv);
+        }
         getChildren().addAll(leftGlareView, rightGlareView, screenGlareView, leftCoverView, rightCoverView);
 
+        fallSandwich(0);
+    }
+    
+    public void fallSandwich(int type){
+        Path path=new Path();
+        ImageView sView=sandwichViews.get(type).get(sandwichViews.get(type).size()-1);
+        path.getElements().add(new MoveTo(sView.getX()+(sView.getImage().getWidth()/2), sView.getY()+(sView.getImage().getHeight()/2)));
+        CubicCurveTo cubicTo=new CubicCurveTo();
+        cubicTo.setControlX1(sView.getX()+(sView.getImage().getWidth()/2));
+        cubicTo.setControlY1(sView.getY()+(sView.getImage().getHeight()/2));
+        cubicTo.setControlX2(367);
+        cubicTo.setControlY2(450);
+        cubicTo.setX(367);
+        cubicTo.setY(595);
+        path.getElements().add(cubicTo);
         
-        leftCoverTT=new TranslateTransition();
-        leftCoverTT.setDuration(Duration.millis(500));
-        leftCoverTT.setNode(leftCoverView);
+        System.out.println(sView.getX());
         
-        rightCoverTT=new TranslateTransition();
-        rightCoverTT.setDuration(Duration.millis(500));
-        rightCoverTT.setNode(rightCoverView);
+        PathTransition pathTransition=new PathTransition();
+        pathTransition.setDuration(Duration.millis(1000));
+        pathTransition.setPath(path);
+        pathTransition.setOrientation(PathTransition.OrientationType.NONE);
+        pathTransition.setNode(sView);
+        
+        RotateTransition r=new RotateTransition(Duration.millis(500), sView);
+        r.setByAngle(360);
+        r.setCycleCount(Timeline.INDEFINITE);
+        
+        ParallelTransition parallelTransition=new ParallelTransition();
+        parallelTransition.getChildren().addAll(pathTransition, r);
+        parallelTransition.play();
+        pathTransition.setOnFinished(e->sandwichInBox(parallelTransition, sView));
     }
     
-    boolean rightCoverIsOpen=false;
-    public void OpenCloseRightCover(){
-        if(rightCoverIsOpen){
-            rightCoverTT.setToY(0);
-            rightCoverTT.play();
-            rightCoverIsOpen=false;
-        }else{
-            rightCoverTT.setToY(-45);
-            rightCoverTT.play();
-            rightCoverIsOpen=true;
-        }
+    private void sandwichInBox(ParallelTransition parallelTransition, ImageView sView){
+        parallelTransition.stop();
+        sView.setTranslateY(575);
+        leftCoverView.OpenCloseLeftCover();
     }
-    
-    boolean leftCoverIsOpen=false;
-    public void OpenCloseLeftCover(){
-        if(leftCoverIsOpen){
-            leftCoverTT.setToY(0);
-            leftCoverTT.play();
-            leftCoverIsOpen=false;
-        }else{
-            leftCoverTT.setToY(-45);
-            leftCoverTT.play();
-            leftCoverIsOpen=true;
-        }
-    }
-    
 }
