@@ -13,6 +13,7 @@ import javafx.scene.effect.Light.Point;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.CubicCurveTo;
+import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.util.Duration;
@@ -71,54 +72,33 @@ public class GeneralView extends Pane{
             i=0;
         }
         
-//        int i=0;
-//        for(List<SandwichView> lsv:sandwichViews){
-//            for(SandwichView sv:lsv){
-//                sv.setX(sandwitchPositions[sv.getType()][0]);
-//                sv.setY(sandwitchPositions[sv.getType()][1]);
-//                sv.setOpacity(0.65);
-//            }
-//        }
-        
-//        int i=0;
-//        for(SandwichView sv:sandwichViews){
-//            sv.setX(sandwitchPositions[i][0]);
-//            sv.setY(sandwitchPositions[i][1]);
-//            sv.setOpacity(0.65);
-//            i++;
-//        }
-        
-        getChildren().add(this.distributeurView);
+        getChildren().add(this.distributeurView.getBgImgView());
         for(List<SandwichView> lsv:sandwichViews){
             getChildren().addAll(lsv);
         }
+        getChildren().add(this.distributeurView.getFgImgView());
         getChildren().addAll(leftGlareView, rightGlareView, screenGlareView, leftCoverView, rightCoverView);
 
-        fallSandwich(0);
+        fallSandwich(1);
     }
     
     public void fallSandwich(int type){
         Path path=new Path();
         ImageView sView=sandwichViews.get(type).get(sandwichViews.get(type).size()-1);
         path.getElements().add(new MoveTo(sView.getX()+(sView.getImage().getWidth()/2), sView.getY()+(sView.getImage().getHeight()/2)));
-        CubicCurveTo cubicTo=new CubicCurveTo();
-        cubicTo.setControlX1(sView.getX()+(sView.getImage().getWidth()/2));
-        cubicTo.setControlY1(sView.getY()+(sView.getImage().getHeight()/2));
-        cubicTo.setControlX2(367);
-        cubicTo.setControlY2(450);
-        cubicTo.setX(367);
-        cubicTo.setY(595);
-        path.getElements().add(cubicTo);
         
-        System.out.println(sView.getX());
+        LineTo l=new LineTo();
+        l.setX(sView.getX()+(sView.getImage().getWidth()/2));
+        l.setY(640);
+        path.getElements().add(l);
         
         PathTransition pathTransition=new PathTransition();
-        pathTransition.setDuration(Duration.millis(1000));
+        pathTransition.setDuration(Duration.millis(700));
         pathTransition.setPath(path);
         pathTransition.setOrientation(PathTransition.OrientationType.NONE);
         pathTransition.setNode(sView);
         
-        RotateTransition r=new RotateTransition(Duration.millis(500), sView);
+        RotateTransition r=new RotateTransition(Duration.millis(650), sView);
         r.setByAngle(360);
         r.setCycleCount(Timeline.INDEFINITE);
         
@@ -130,7 +110,8 @@ public class GeneralView extends Pane{
     
     private void sandwichInBox(ParallelTransition parallelTransition, ImageView sView){
         parallelTransition.stop();
-        sView.setTranslateY(575);
+        sView.setTranslateX(90);
+        sView.setTranslateY(678-sView.getY());
         leftCoverView.OpenCloseLeftCover();
     }
 }
