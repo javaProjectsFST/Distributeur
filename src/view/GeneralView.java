@@ -59,8 +59,12 @@ public class GeneralView extends Pane{
         rightCoverView=new RightCoverView();
         
         this.distributeurView=distributeurView;
-        this.sandwichViews=sandwichViews;
         
+        initView(sandwichViews);
+    }
+    
+    public void initView(ArrayList<List<SandwichView>> sandwichViews){
+        this.sandwichViews=sandwichViews;
         int i=0;
         for(List<SandwichView> lsv:sandwichViews){
             for(SandwichView s: lsv){
@@ -72,19 +76,24 @@ public class GeneralView extends Pane{
             i=0;
         }
         
+        getChildren().clear();
         getChildren().add(this.distributeurView.getBgImgView());
         for(List<SandwichView> lsv:sandwichViews){
             getChildren().addAll(lsv);
         }
-        getChildren().add(this.distributeurView.getFgImgView());
+        getChildren().addAll(this.distributeurView.getFgImgView(), this.distributeurView.getbtn());
         getChildren().addAll(leftGlareView, rightGlareView, screenGlareView, leftCoverView, rightCoverView);
-
-        fallSandwich(1);
+        leftCoverView.CloseLeftCover();
     }
     
     public void fallSandwich(int type){
         Path path=new Path();
-        ImageView sView=sandwichViews.get(type).get(sandwichViews.get(type).size()-1);
+        ImageView sView;
+        try{
+            sView=sandwichViews.get(type).get(sandwichViews.get(type).size()-1);
+        }catch(ArrayIndexOutOfBoundsException e){
+            return;
+        }
         path.getElements().add(new MoveTo(sView.getX()+(sView.getImage().getWidth()/2), sView.getY()+(sView.getImage().getHeight()/2)));
         
         LineTo l=new LineTo();
@@ -110,8 +119,9 @@ public class GeneralView extends Pane{
     
     private void sandwichInBox(ParallelTransition parallelTransition, ImageView sView){
         parallelTransition.stop();
-        sView.setTranslateX(90);
+        sView.setTranslateX(327-sView.getX());
         sView.setTranslateY(678-sView.getY());
-        leftCoverView.OpenCloseLeftCover();
+        sView.setOpacity(1);
+        leftCoverView.OpenLeftCover();
     }
 }

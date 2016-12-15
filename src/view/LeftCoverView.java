@@ -20,16 +20,13 @@ public class LeftCoverView extends ImageView{
         leftCoverTT.setNode(this);
     }
     
-    boolean leftCoverIsOpen=false;
-    public void OpenCloseLeftCover(){
-        if(leftCoverIsOpen){
-            leftCoverTT.setToY(0);
-            leftCoverTT.play();
-            leftCoverIsOpen=false;
-        }else{
-            leftCoverTT.setToY(-45);
-            leftCoverTT.play();
-            leftCoverIsOpen=true;
-        }
+    public void OpenLeftCover(){
+        leftCoverTT.setToY(-45);
+        leftCoverTT.play();
+    }
+    
+    public void CloseLeftCover(){
+        leftCoverTT.setToY(0);
+        leftCoverTT.play();
     }
 }

@@ -57,7 +57,7 @@ public class StockSandwichCRUD {
     
     public boolean removeSandwich(int ID){
         try{
-            PreparedStatement prepare=connection.prepareStatement("UPDATE stocksandwich SET quantity=quantity-1 WHERE quantity>0 AND ID=1");
+            PreparedStatement prepare=connection.prepareStatement("UPDATE stocksandwich SET quantity=quantity-1 WHERE quantity>0 AND ID=?");
             prepare.setInt(1, ID);
             return prepare.executeUpdate()==1 ? true : false;
         }catch(SQLException e){

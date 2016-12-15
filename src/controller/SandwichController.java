@@ -1,6 +1,7 @@
 package controller;
 
 import java.sql.Connection;
+import javafx.scene.input.MouseEvent;
 import model.CRUD.SandwichCRUD;
 import model.CRUD.StockSandwichCRUD;
 import model.Sandwich;
@@ -12,10 +13,12 @@ public class SandwichController {
     private Sandwich sandwich;
     private SandwichCRUD sandwichCRUD;
     private StockSandwichCRUD stockSandwichCRUD;
+    private DistributeurController distributeurController;
     
-    public SandwichController(Sandwich sandwich, Connection connection){
+    public SandwichController(Sandwich sandwich, Connection connection, DistributeurController distributeurController){
         this.sandwich=sandwich;
         this.connection=connection;
+        this.distributeurController=distributeurController;
         sandwichCRUD=new SandwichCRUD(this.connection);
         stockSandwichCRUD=new StockSandwichCRUD(connection);
         int type=-1;
@@ -30,6 +33,17 @@ public class SandwichController {
                 break;
         }
         sandwichView=new SandwichView(this.sandwich.getImgPath(), type);
+        initComponenet();
+    }
+    
+    public void initComponenet(){
+        sandwichView.addEventHandler(MouseEvent.MOUSE_CLICKED, e->dispose());
+    }
+    
+    public void dispose(){
+        stockSandwichCRUD.removeSandwich(sandwich.getID());
+        distributeurController.refreshStockSandwich();
+        System.out.println("yoo");
     }
     
     public SandwichView getSandwichView(){

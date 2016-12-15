@@ -20,16 +20,13 @@ public class RightCoverView extends ImageView{
         rightCoverTT.setNode(this);
     }
     
-    boolean rightCoverIsOpen=false;
-    public void OpenCloseRightCover(){
-        if(rightCoverIsOpen){
-            rightCoverTT.setToY(0);
-            rightCoverTT.play();
-            rightCoverIsOpen=false;
-        }else{
-            rightCoverTT.setToY(-45);
-            rightCoverTT.play();
-            rightCoverIsOpen=true;
-        }
+    public void OpenRightCover(){
+        rightCoverTT.setToY(-45);
+        rightCoverTT.play();
+    }
+    
+    public void CloseRightCover(){
+        rightCoverTT.setToY(0);
+        rightCoverTT.play();
     }
 }

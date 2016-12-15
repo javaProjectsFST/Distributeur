@@ -1,5 +1,6 @@
 package controller;
 
+import controller.main.GeneralController;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,15 +22,21 @@ public class DistributeurController {
     private final BoissonCRUD boissonCRUD;
     private final DistributeurView distributeurView;
     private ArrayList<List<SandwichController>> sandwichControllers;
+    private final GeneralController generalController;
     
-    public DistributeurController(Connection connection){
+    public DistributeurController(Connection connection, GeneralController generalController){
         this.connection=connection;
+        this.generalController=generalController;
         distributeurView=new DistributeurView();
         stockBoissonCRUD=new StockBoissonCRUD(this.connection);
         stockSandwichCRUD=new StockSandwichCRUD(this.connection);
         sandwichCRUD=new SandwichCRUD(this.connection);
         boissonCRUD=new BoissonCRUD(this.connection);
         
+        initController();
+    }
+    
+    private void initController(){
         sandwichControllers=new ArrayList<List<SandwichController>>();
         
         ArrayList<StockSandwich> lst=new ArrayList<StockSandwich>();
@@ -39,10 +46,15 @@ public class DistributeurController {
             sandwichControllers.add(new ArrayList<SandwichController>());
             for(int j=0; j<st.getQuantity(); j++){
                 Sandwich s=sandwichCRUD.getSandwichByID(st.getID());
-                sandwichControllers.get(i).add(new SandwichController(s, connection));
+                sandwichControllers.get(i).add(new SandwichController(s, connection, this));
             }
             i++;
         }
+    }
+    
+    public void refreshStockSandwich(){
+        initController();
+        generalController.refresh();
     }
     
     public DistributeurView getDistributeurView(){

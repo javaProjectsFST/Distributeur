@@ -18,9 +18,13 @@ public class GeneralController {
     
     public GeneralController(Connection connection){
         this.connection=connection;
-        distributeurController=new DistributeurController(this.connection);
+        distributeurController=new DistributeurController(this.connection, this);
         
         generalView=new GeneralView(distributeurController.getDistributeurView(), distributeurController.getAllSandwichViews());
+    }
+    
+    public void refresh(){
+        generalView.initView(distributeurController.getAllSandwichViews());
     }
     
     public GeneralView getGeneralPane(){
