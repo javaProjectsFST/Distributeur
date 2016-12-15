@@ -15,8 +15,26 @@ public class DistributeurView{
     private final ImageView fgImgView;
     
     private final Button sand1Btn;
+
+    private final int[][] PositionsBtn;
     
     public DistributeurView(){
+        
+         PositionsBtn=new int[][]{
+            {849, 410}, 
+            {849, 437}, 
+            {849, 465},
+            {849, 493}, 
+            {849, 520}, 
+            {849, 547},
+            {849, 575}, 
+            {849, 602}, 
+            {849, 630},
+            {849, 658}, 
+            {849, 685},
+            {849, 713},
+        };
+         
         bgImg=new Image(bgPath);
         bgImgView=new ImageView(bgImg);
         
@@ -24,14 +42,15 @@ public class DistributeurView{
         fgImgView=new ImageView(fgImg);
         
         sand1Btn=new Button("Sandwich Boeuf");
-        sand1Btn.relocate(849, 410);
+        sand1Btn.relocate(848, 410);
         sand1Btn.setMinHeight(24);
         sand1Btn.setMaxHeight(24);
         sand1Btn.setPrefHeight(24);
-        sand1Btn.setMaxWidth(82);
-        sand1Btn.setMinWidth(82);
-        sand1Btn.setPrefWidth(82);
+        sand1Btn.setMaxWidth(84);
+        sand1Btn.setMinWidth(84);
+        sand1Btn.setPrefWidth(84);
         sand1Btn.setStyle("-fx-font: 8 arial");
+      
         
     }
     
