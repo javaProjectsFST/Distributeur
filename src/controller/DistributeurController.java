@@ -4,6 +4,12 @@ import controller.main.GeneralController;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
+import javafx.scene.layout.Background;
 import model.CRUD.BoissonCRUD;
 import model.CRUD.SandwichCRUD;
 import model.CRUD.StockBoissonCRUD;
@@ -21,7 +27,7 @@ public class DistributeurController {
     private final SandwichCRUD sandwichCRUD;
     private final BoissonCRUD boissonCRUD;
     private final DistributeurView distributeurView;
-    private ArrayList<List<SandwichController>> sandwichControllers;
+    private ArrayList<ArrayList<SandwichController>> sandwichControllers;
     private final GeneralController generalController;
     
     public DistributeurController(Connection connection, GeneralController generalController){
@@ -37,7 +43,7 @@ public class DistributeurController {
     }
     
     private void initController(){
-        sandwichControllers=new ArrayList<List<SandwichController>>();
+        sandwichControllers=new ArrayList<ArrayList<SandwichController>>();
         
         ArrayList<StockSandwich> lst=new ArrayList<StockSandwich>();
         lst=stockSandwichCRUD.getAllStock();
@@ -49,6 +55,68 @@ public class DistributeurController {
                 sandwichControllers.get(i).add(new SandwichController(s, connection, this));
             }
             i++;
+        }
+        
+        ArrayList<Button> buttons=distributeurView.getButtons();
+        for(Button b:buttons){
+            b.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent t) {
+                    buttonClicked((Button) t.getSource());
+                }
+            });
+        }
+    }
+    
+    private void resetStyle(Button btn, String style){
+        try {
+            Thread.sleep(1000);
+            btn.setStyle(style);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(DistributeurController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void buttonClicked(Button btn){
+        int[][] buttonsPositions=distributeurView.getButtonsPositions();
+        if(btn.getLayoutY()==buttonsPositions[0][1]){
+            ArrayList<SandwichController> l=sandwichControllers.get(0);
+            if(l.size()==0){
+                String style=btn.getStyle();
+                btn.setStyle(style+"; -fx-background-color: #f5a0a0;");
+                new Thread(()->resetStyle(btn, style)).start();
+            }else{
+                l.get(l.size()-1).fallSandwich();
+            }
+        }else if(btn.getLayoutY()==buttonsPositions[1][1]){
+            ArrayList<SandwichController> l=sandwichControllers.get(1);
+            if(l.size()==0){
+                String style=btn.getStyle();
+                btn.setStyle(style+"; -fx-background-color: #f5a0a0;");
+                new Thread(()->resetStyle(btn, style)).start();
+            }else{
+                l.get(l.size()-1).fallSandwich();
+            }
+        }else if(btn.getLayoutY()==buttonsPositions[2][1]){
+            
+        }else if(btn.getLayoutY()==buttonsPositions[3][1]){
+            
+        }else if(btn.getLayoutY()==buttonsPositions[4][1]){
+            
+        }else if(btn.getLayoutY()==buttonsPositions[5][1]){
+            
+        }else if(btn.getLayoutY()==buttonsPositions[6][1]){
+            
+        }else if(btn.getLayoutY()==buttonsPositions[7][1]){
+            
+        }else if(btn.getLayoutY()==buttonsPositions[8][1]){
+            
+        }else if(btn.getLayoutY()==buttonsPositions[9][1]){
+            
+        }else if(btn.getLayoutY()==buttonsPositions[10][1]){
+            
+        }else if(btn.getLayoutY()==buttonsPositions[11][1]){
+            
         }
     }
     
@@ -72,5 +140,9 @@ public class DistributeurController {
             i++;
         }
         return lsv;
+    }
+    
+    public GeneralController getGeneralController(){
+        return generalController;
     }
 }

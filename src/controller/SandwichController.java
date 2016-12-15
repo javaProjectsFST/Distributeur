@@ -14,6 +14,7 @@ public class SandwichController {
     private SandwichCRUD sandwichCRUD;
     private StockSandwichCRUD stockSandwichCRUD;
     private DistributeurController distributeurController;
+    private int type=-1;
     
     public SandwichController(Sandwich sandwich, Connection connection, DistributeurController distributeurController){
         this.sandwich=sandwich;
@@ -21,7 +22,6 @@ public class SandwichController {
         this.distributeurController=distributeurController;
         sandwichCRUD=new SandwichCRUD(this.connection);
         stockSandwichCRUD=new StockSandwichCRUD(connection);
-        int type=-1;
         switch (sandwich.getSandwichName()){
             case "sandwichBoeuf":
                 type=0;
@@ -40,10 +40,16 @@ public class SandwichController {
         sandwichView.addEventHandler(MouseEvent.MOUSE_CLICKED, e->dispose());
     }
     
-    public void dispose(){
+    public int fallSandwich(){
+        if(distributeurController.getGeneralController().fallSandwich(type)==-1){
+            return -1;
+        }
         stockSandwichCRUD.removeSandwich(sandwich.getID());
+        return 0;
+    }
+    
+    public void dispose(){
         distributeurController.refreshStockSandwich();
-        System.out.println("yoo");
     }
     
     public SandwichView getSandwichView(){

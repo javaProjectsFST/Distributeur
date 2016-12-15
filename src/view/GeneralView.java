@@ -81,18 +81,19 @@ public class GeneralView extends Pane{
         for(List<SandwichView> lsv:sandwichViews){
             getChildren().addAll(lsv);
         }
-        getChildren().addAll(this.distributeurView.getFgImgView(), this.distributeurView.getbtn());
+        getChildren().add(this.distributeurView.getFgImgView());
+        getChildren().addAll(this.distributeurView.getButtons());
         getChildren().addAll(leftGlareView, rightGlareView, screenGlareView, leftCoverView, rightCoverView);
         leftCoverView.CloseLeftCover();
     }
     
-    public void fallSandwich(int type){
+    public int fallSandwich(int type){
         Path path=new Path();
         ImageView sView;
         try{
             sView=sandwichViews.get(type).get(sandwichViews.get(type).size()-1);
         }catch(ArrayIndexOutOfBoundsException e){
-            return;
+            return -1;
         }
         path.getElements().add(new MoveTo(sView.getX()+(sView.getImage().getWidth()/2), sView.getY()+(sView.getImage().getHeight()/2)));
         
@@ -115,6 +116,7 @@ public class GeneralView extends Pane{
         parallelTransition.getChildren().addAll(pathTransition, r);
         parallelTransition.play();
         pathTransition.setOnFinished(e->sandwichInBox(parallelTransition, sView));
+        return 0;
     }
     
     private void sandwichInBox(ParallelTransition parallelTransition, ImageView sView){

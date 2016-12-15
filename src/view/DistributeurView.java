@@ -1,5 +1,7 @@
 package view;
 
+import java.util.ArrayList;
+import java.util.List;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -14,13 +16,17 @@ public class DistributeurView{
     private final Image fgImg;
     private final ImageView fgImgView;
     
-    private final Button sand1Btn;
+    private final ArrayList<Button> distributeurButtons;
 
-    private final int[][] PositionsBtn;
+    private final int[][] buttonsPositions;
+    private final String[] buttonsNames;
+    private final int BTNWidth=84;
+    private final int BTNHeight=24;
+    private final String BTNStyle="-fx-font: 8 arial";
     
     public DistributeurView(){
         
-         PositionsBtn=new int[][]{
+         buttonsPositions=new int[][]{
             {849, 410}, 
             {849, 437}, 
             {849, 465},
@@ -35,27 +41,53 @@ public class DistributeurView{
             {849, 713},
         };
          
+        buttonsNames=new String[]{
+            "Sandwich Boeuf",
+            "Panini Omelette",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        };
+         
         bgImg=new Image(bgPath);
         bgImgView=new ImageView(bgImg);
         
         fgImg=new Image(fgPath);
         fgImgView=new ImageView(fgImg);
         
-        sand1Btn=new Button("Sandwich Boeuf");
-        sand1Btn.relocate(848, 410);
-        sand1Btn.setMinHeight(24);
-        sand1Btn.setMaxHeight(24);
-        sand1Btn.setPrefHeight(24);
-        sand1Btn.setMaxWidth(84);
-        sand1Btn.setMinWidth(84);
-        sand1Btn.setPrefWidth(84);
-        sand1Btn.setStyle("-fx-font: 8 arial");
-      
+        distributeurButtons=new ArrayList<Button>();
         
+        for(int i=0; i<12; i++){
+            Button b=new Button(buttonsNames[i]);
+            restyleBotton(b);
+            b.relocate(buttonsPositions[i][0], buttonsPositions[i][1]);
+            distributeurButtons.add(b);
+        }
     }
     
-    public Button getbtn(){
-        return sand1Btn;
+    private void restyleBotton(Button btn){
+        btn.setMinHeight(BTNHeight);
+        btn.setMaxHeight(BTNHeight);
+        btn.setPrefHeight(BTNHeight);
+        btn.setMaxWidth(BTNWidth);
+        btn.setMinWidth(BTNWidth);
+        btn.setPrefWidth(BTNWidth);
+        btn.setStyle(BTNStyle);
+    }
+    
+    public int[][] getButtonsPositions(){
+        return buttonsPositions;
+    }
+    
+    public ArrayList<Button> getButtons(){
+        return distributeurButtons;
     }
 
     public String getBgPath() {

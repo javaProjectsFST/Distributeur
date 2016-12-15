@@ -27,7 +27,11 @@ public class GeneralController {
         generalView.initView(distributeurController.getAllSandwichViews());
     }
     
-    public GeneralView getGeneralPane(){
+    public GeneralView getGeneralView(){
         return generalView;
+    }
+    
+    public int fallSandwich(int type){
+        return generalView.fallSandwich(type);
     }
 }
