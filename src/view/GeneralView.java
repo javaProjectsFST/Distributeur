@@ -84,6 +84,7 @@ public class GeneralView extends Pane{
         getChildren().add(this.distributeurView.getFgImgView());
         getChildren().addAll(this.distributeurView.getButtons());
         getChildren().addAll(leftGlareView, rightGlareView, screenGlareView, leftCoverView, rightCoverView);
+        
         leftCoverView.CloseLeftCover();
     }
     
