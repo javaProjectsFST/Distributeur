@@ -1,12 +1,8 @@
 package controller.main;
 
 import controller.DistributeurController;
+import controller.ToolbarController;
 import java.sql.Connection;
-import java.util.ArrayList;
-import model.CRUD.StockBoissonCRUD;
-import model.CRUD.StockSandwichCRUD;
-import model.StockBoisson;
-import model.StockSandwich;
 import view.GeneralView;
 
 public class GeneralController {
@@ -15,12 +11,14 @@ public class GeneralController {
     
     private final GeneralView generalView;
     private final DistributeurController distributeurController;
+    private final ToolbarController toolBarController;
     
     public GeneralController(Connection connection){
         this.connection=connection;
         distributeurController=new DistributeurController(this.connection, this);
+        toolBarController=new ToolbarController(connection);
         
-        generalView=new GeneralView(distributeurController.getDistributeurView(), distributeurController.getAllSandwichViews());
+        generalView=new GeneralView(distributeurController.getDistributeurView(), distributeurController.getAllSandwichViews(), toolBarController.getToolBarView());
     }
     
     public void refresh(){

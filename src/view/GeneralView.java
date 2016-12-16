@@ -6,13 +6,9 @@ import javafx.animation.ParallelTransition;
 import javafx.animation.PathTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
-import javafx.animation.TranslateTransition;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.effect.Light.Point;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.CubicCurveTo;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
@@ -25,13 +21,14 @@ public class GeneralView extends Pane{
     private DistributeurView distributeurView;
     private LeftCoverView leftCoverView;
     private RightCoverView rightCoverView;
+    private ToolBarView toolBarView;
     
     private ArrayList<List<SandwichView>> sandwichViews;
     
     private final int[][] Positions;
     private final ArrayList<List<Point>> sandwichPositions;
     
-    public GeneralView(DistributeurView distributeurView, ArrayList<List<SandwichView>> sandwichViews){
+    public GeneralView(DistributeurView distributeurView, ArrayList<List<SandwichView>> sandwichViews, ToolBarView toolBarView){
         Positions=new int[][]{
             {237, 103}, {332, 103}, {427, 103},
             {237, 182}, {332, 182}, {427, 182},
@@ -59,6 +56,7 @@ public class GeneralView extends Pane{
         rightCoverView=new RightCoverView();
         
         this.distributeurView=distributeurView;
+        this.toolBarView=toolBarView;
         
         initView(sandwichViews);
     }
@@ -77,6 +75,14 @@ public class GeneralView extends Pane{
         }
         
         getChildren().clear();
+        
+        this.distributeurView.setViewX(toolBarView.getPrefWidth());
+        this.leftGlareView.setLayoutX(toolBarView.getPrefWidth());
+        this.rightGlareView.setLayoutX(toolBarView.getPrefWidth());
+        this.leftCoverView.setLayoutX(toolBarView.getPrefWidth());
+        this.rightCoverView.setLayoutX(toolBarView.getPrefWidth());
+        this.screenGlareView.setLayoutX(toolBarView.getPrefWidth());
+
         getChildren().add(this.distributeurView.getBgImgView());
         for(List<SandwichView> lsv:sandwichViews){
             getChildren().addAll(lsv);
@@ -84,7 +90,7 @@ public class GeneralView extends Pane{
         getChildren().add(this.distributeurView.getFgImgView());
         getChildren().addAll(this.distributeurView.getButtons());
         getChildren().addAll(leftGlareView, rightGlareView, screenGlareView, leftCoverView, rightCoverView);
-        
+        getChildren().add(toolBarView);
         leftCoverView.CloseLeftCover();
     }
     

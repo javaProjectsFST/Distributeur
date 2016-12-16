@@ -24,22 +24,24 @@ public class DistributeurView{
     private final int BTNHeight=24;
     private final String BTNStyle="-fx-font: 8 arial";
     
+    private double viewX;
+    
     public DistributeurView(){
         
-         buttonsPositions=new int[][]{
-            {849, 410}, 
-            {849, 437}, 
-            {849, 465},
-            {849, 493}, 
-            {849, 520}, 
-            {849, 547},
-            {849, 575}, 
-            {849, 602}, 
-            {849, 630},
-            {849, 658}, 
-            {849, 685},
-            {849, 713},
-        };
+        buttonsPositions=new int[][]{
+           {849, 410}, 
+           {849, 437}, 
+           {849, 465},
+           {849, 493}, 
+           {849, 520}, 
+           {849, 547},
+           {849, 575}, 
+           {849, 602}, 
+           {849, 630},
+           {849, 658}, 
+           {849, 685},
+           {849, 713},
+       };
          
         buttonsNames=new String[]{
             "Sandwich Boeuf",
@@ -69,6 +71,19 @@ public class DistributeurView{
             restyleBotton(b);
             b.relocate(buttonsPositions[i][0], buttonsPositions[i][1]);
             distributeurButtons.add(b);
+        }
+    }
+    
+    public double getViewX(){
+        return viewX;
+    }
+    
+    public void setViewX(double viewX){
+        this.viewX=viewX;
+        bgImgView.setLayoutX(viewX);
+        fgImgView.setLayoutX(viewX);
+        for(int i=0; i<12; i++){
+            distributeurButtons.get(i).relocate(buttonsPositions[i][0]+viewX, buttonsPositions[i][1]);
         }
     }
     

@@ -4,16 +4,17 @@ import controller.main.GeneralController;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import model.CRUD.BoissonCRUD;
+import model.CRUD.EarnedCRUD;
 import model.CRUD.SandwichCRUD;
 import model.CRUD.StockBoissonCRUD;
 import model.CRUD.StockSandwichCRUD;
+import model.Earned;
 import model.Sandwich;
 import model.StockSandwich;
 import view.DistributeurView;
@@ -29,6 +30,8 @@ public class DistributeurController {
     private final DistributeurView distributeurView;
     private ArrayList<ArrayList<SandwichController>> sandwichControllers;
     private final GeneralController generalController;
+    private final EarnedCRUD earnedCrud;
+    private ArrayList<Earned> earned;
     
     public DistributeurController(Connection connection, GeneralController generalController){
         this.connection=connection;
@@ -38,12 +41,14 @@ public class DistributeurController {
         stockSandwichCRUD=new StockSandwichCRUD(this.connection);
         sandwichCRUD=new SandwichCRUD(this.connection);
         boissonCRUD=new BoissonCRUD(this.connection);
+        earnedCrud=new EarnedCRUD(connection);
         
         initController();
     }
     
     private void initController(){
         sandwichControllers=new ArrayList<ArrayList<SandwichController>>();
+        earned=earnedCrud.getAllEarned();
         
         ArrayList<StockSandwich> lst=new ArrayList<StockSandwich>();
         lst=stockSandwichCRUD.getAllStock();
