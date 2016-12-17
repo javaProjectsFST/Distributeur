@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import model.Earned;
 
 public class EarnedCRUD {
 
@@ -15,34 +14,35 @@ public class EarnedCRUD {
         this.connection=connection;
     }
     
-    public Earned getEarnedByValue(double value){
+    public int getEarned(){
         try{
-            PreparedStatement prepare=connection.prepareStatement("select * from earned where value=?");
-            prepare.setDouble(1, value);
+            PreparedStatement prepare=connection.prepareStatement("select * from earned");
             ResultSet rs=prepare.executeQuery();
             if(rs.next()){
-                Earned r=new Earned(rs.getDouble(1), rs.getInt(2));
-                return r;
+                return rs.getInt(1);
             }
         }catch(SQLException e){
             e.printStackTrace();
         }
-        return null;
+        return -1;
     }
     
-    public ArrayList<Earned> getAllEarned(){
+    public void addEarned(int sum){
         try{
-            PreparedStatement prepare=connection.prepareStatement("select * from earned");
-            ResultSet rs=prepare.executeQuery();
-            ArrayList<Earned> l=new ArrayList<Earned>();
-            while(rs.next()){
-                Earned r=new Earned(rs.getDouble(1), rs.getInt(2));
-                l.add(r);
-            }
-            return l;
+            PreparedStatement prepare=connection.prepareStatement("update earned set value=value+?");
+            prepare.setInt(1, sum);
+            prepare.executeUpdate();
         }catch(SQLException e){
             e.printStackTrace();
-            return null;
+        }
+    }
+    
+    public void resetEarned(){
+        try{
+            PreparedStatement prepare=connection.prepareStatement("update earned set value=0");
+            prepare.executeUpdate();
+        }catch(SQLException e){
+            e.printStackTrace();
         }
     }
 }

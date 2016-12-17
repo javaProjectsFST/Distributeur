@@ -25,7 +25,7 @@ public class SandwichCRUD {
                 Sandwich s=new Sandwich();
                 s.setID(rs.getInt(1));
                 s.setSandwichName(rs.getString(2));
-                s.setPrice(rs.getDouble(3));
+                s.setPrice(rs.getInt(3));
                 s.setImgPath(rs.getString(4));
                 return s;
             }
@@ -45,7 +45,7 @@ public class SandwichCRUD {
                 Sandwich s=new Sandwich();
                 s.setID(rs.getInt(1));
                 s.setSandwichName(rs.getString(2));
-                s.setPrice(rs.getDouble(3));
+                s.setPrice(rs.getInt(3));
                 s.setImgPath(rs.getString(4));
                 return s;
             }
@@ -65,7 +65,7 @@ public class SandwichCRUD {
                 Sandwich s=new Sandwich();
                 s.setID(rs.getInt(1));
                 s.setSandwichName(rs.getString(2));
-                s.setPrice(rs.getDouble(3));
+                s.setPrice(rs.getInt(3));
                 s.setImgPath(rs.getString(4));
                 ls.add(s);
             }

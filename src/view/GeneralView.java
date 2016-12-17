@@ -7,6 +7,7 @@ import javafx.animation.PathTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
 import javafx.scene.effect.Light.Point;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.LineTo;
@@ -22,6 +23,9 @@ public class GeneralView extends Pane{
     private LeftCoverView leftCoverView;
     private RightCoverView rightCoverView;
     private ToolBarView toolBarView;
+    private MoneyCoverView moneyCoverView;
+    private RestCoverView restCoverView;
+    private ImageView moneyEarnedView;
     
     private ArrayList<List<SandwichView>> sandwichViews;
     
@@ -30,12 +34,12 @@ public class GeneralView extends Pane{
     
     public GeneralView(DistributeurView distributeurView, ArrayList<List<SandwichView>> sandwichViews, ToolBarView toolBarView){
         Positions=new int[][]{
-            {237, 103}, {332, 103}, {427, 103},
-            {237, 182}, {332, 182}, {427, 182},
-            {237, 255}, {332, 255}, {427, 255},
-            {237, 331}, {332, 331}, {427, 331},
-            {237, 407}, {332, 407}, {427, 407},
-            {237, 483}, {332, 483}, {427, 483},
+            {337, 103}, {432, 103}, {527, 103},
+            {337, 182}, {432, 182}, {527, 182},
+            {337, 255}, {432, 255}, {527, 255},
+            {337, 331}, {432, 331}, {527, 331},
+            {337, 407}, {432, 407}, {527, 407},
+            {337, 483}, {432, 483}, {527, 483},
         };
         sandwichPositions=new ArrayList<List<Point>>();
         for(int i=0; i<18; i+=3){
@@ -54,6 +58,10 @@ public class GeneralView extends Pane{
         screenGlareView=new ScreenGlareView();
         leftCoverView=new LeftCoverView();
         rightCoverView=new RightCoverView();
+        moneyCoverView=new MoneyCoverView();
+        restCoverView=new RestCoverView();
+        moneyEarnedView=new ImageView(new Image("resources/pieces/allPieces.png"));
+        moneyEarnedView.setVisible(false);
         
         this.distributeurView=distributeurView;
         this.toolBarView=toolBarView;
@@ -82,16 +90,28 @@ public class GeneralView extends Pane{
         this.leftCoverView.setLayoutX(toolBarView.getPrefWidth());
         this.rightCoverView.setLayoutX(toolBarView.getPrefWidth());
         this.screenGlareView.setLayoutX(toolBarView.getPrefWidth());
+        this.moneyCoverView.setLayoutX(toolBarView.getPrefWidth());
+        this.restCoverView.setLayoutX(toolBarView.getPrefWidth());
+        this.restCoverView.getRestView().setLayoutX(toolBarView.getPrefWidth());
+        this.moneyEarnedView.setLayoutX(toolBarView.getPrefWidth());
 
+        
         getChildren().add(this.distributeurView.getBgImgView());
         for(List<SandwichView> lsv:sandwichViews){
             getChildren().addAll(lsv);
         }
         getChildren().add(this.distributeurView.getFgImgView());
+        getChildren().add(moneyEarnedView);
         getChildren().addAll(this.distributeurView.getButtons());
-        getChildren().addAll(leftGlareView, rightGlareView, screenGlareView, leftCoverView, rightCoverView);
+        getChildren().addAll(this.distributeurView.getScrennMessageOne());
+        getChildren().addAll(leftGlareView, rightGlareView, leftCoverView, rightCoverView, moneyCoverView, restCoverView.getRestView(), restCoverView);
+        getChildren().add(this.distributeurView.getSumLabel());
         getChildren().add(toolBarView);
         leftCoverView.CloseLeftCover();
+    }
+    
+    public ImageView getMoneyEarnedView(){
+        return moneyEarnedView;
     }
     
     public int fallSandwich(int type){
@@ -128,9 +148,17 @@ public class GeneralView extends Pane{
     
     private void sandwichInBox(ParallelTransition parallelTransition, ImageView sView){
         parallelTransition.stop();
-        sView.setTranslateX(327-sView.getX());
+        sView.setTranslateX(427-sView.getX());
         sView.setTranslateY(678-sView.getY());
         sView.setOpacity(1);
         leftCoverView.OpenLeftCover();
+    }
+    
+    public MoneyCoverView getMoneyCoverView(){
+        return moneyCoverView;
+    }
+    
+    public RestCoverView getRestCoverView(){
+        return restCoverView;
     }
 }

@@ -49,6 +49,7 @@ public class SandwichController {
     }
     
     public void dispose(){
+        distributeurController.setSandwichBoxFull(false);
         distributeurController.refreshStockSandwich();
     }
     
@@ -60,5 +61,9 @@ public class SandwichController {
         if(stockSandwichCRUD.removeSandwich(sandwich.getID())){
             
         }
+    }
+    
+    public Sandwich getSandwich(){
+        return sandwich;
     }
 }

@@ -4,14 +4,14 @@ public class Sandwich {
 
     private int ID;
     private String sandwichName;
-    private double price;
+    private int price;
     private String imgPath;
 
     public Sandwich(){
         super();
     }
    
-    public Sandwich(int ID, String sandwichName, double price, String imgPath){
+    public Sandwich(int ID, String sandwichName, int price, String imgPath){
         this.ID=ID;
         this.sandwichName=sandwichName;
         this.price=price;
@@ -26,11 +26,11 @@ public class Sandwich {
         this.sandwichName = sandwichName;
     }
 
-    public double getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 

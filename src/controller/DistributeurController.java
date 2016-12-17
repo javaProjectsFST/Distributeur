@@ -1,5 +1,6 @@
 package controller;
 
+import com.sun.glass.events.MouseEvent;
 import controller.main.GeneralController;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -8,13 +9,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.scene.control.Button;
 import model.CRUD.BoissonCRUD;
 import model.CRUD.EarnedCRUD;
 import model.CRUD.SandwichCRUD;
 import model.CRUD.StockBoissonCRUD;
 import model.CRUD.StockSandwichCRUD;
-import model.Earned;
 import model.Sandwich;
 import model.StockSandwich;
 import view.DistributeurView;
@@ -31,7 +32,7 @@ public class DistributeurController {
     private ArrayList<ArrayList<SandwichController>> sandwichControllers;
     private final GeneralController generalController;
     private final EarnedCRUD earnedCrud;
-    private ArrayList<Earned> earned;
+    private boolean sandwichBoxFull=false;
     
     public DistributeurController(Connection connection, GeneralController generalController){
         this.connection=connection;
@@ -46,9 +47,53 @@ public class DistributeurController {
         initController();
     }
     
+    public void resetScreen(){
+        try {
+            Thread.sleep(2000);
+            distributeurView.getScreenErrorMessage().setVisible(false);
+            distributeurView.getScreenSuccesMessage().setVisible(false);
+            distributeurView.getScreenWaitMessage().setVisible(false);
+            for(Button b:distributeurView.getScreenButtons()){
+                b.setVisible(false);
+            }
+            distributeurView.getScrennMessageOne().setVisible(true);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(DistributeurController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    int count=0;
+    String code="";
+    boolean cardStatus=false;
+    private void screenButtonClicked(Button b){
+        count++;
+        code+=b.getText();
+        if(count==4){
+            for(Button bt:distributeurView.getScreenButtons()){
+                    bt.setVisible(false);
+                }
+            if(code.equals("1234")){
+                distributeurView.getScreenWaitMessage().setVisible(true);
+                this.generalController.getGeneralView().getChildren().add(distributeurView.getScreenWaitMessage());
+                cardStatus=true;
+            }else{
+                cardStatus=false;
+                distributeurView.getScreenErrorMessage().setVisible(true);
+                this.generalController.getGeneralView().getChildren().add(distributeurView.getScreenErrorMessage());
+                new Thread(()->resetScreen()).start();
+            }
+            code="";
+            count=0;
+        }
+        System.out.println(code);
+    }
+    
     private void initController(){
         sandwichControllers=new ArrayList<ArrayList<SandwichController>>();
-        earned=earnedCrud.getAllEarned();
+        ArrayList<Button> screenButtons=distributeurView.getScreenButtons();
+        for(Button b:screenButtons){
+            b.setOnAction(e->screenButtonClicked(b));
+        }
         
         ArrayList<StockSandwich> lst=new ArrayList<StockSandwich>();
         lst=stockSandwichCRUD.getAllStock();
@@ -82,25 +127,67 @@ public class DistributeurController {
         }
     }
     
+    public boolean getSandwichBoxFull(){
+        return sandwichBoxFull;
+    }
+    
+    public void setSandwichBoxFull(boolean b){
+        sandwichBoxFull=b;
+    }
+    
     private void buttonClicked(Button btn){
         int[][] buttonsPositions=distributeurView.getButtonsPositions();
         if(btn.getLayoutY()==buttonsPositions[0][1]){
             ArrayList<SandwichController> l=sandwichControllers.get(0);
-            if(l.size()==0){
+            if(l.size()==0 || sandwichBoxFull || (generalController.getToolBarController().getSum()<l.get(l.size()-1).getSandwich().getPrice() && !cardStatus)){
                 String style=btn.getStyle();
                 btn.setStyle(style+"; -fx-background-color: #f5a0a0;");
                 new Thread(()->resetStyle(btn, style)).start();
             }else{
+                sandwichBoxFull=true;
                 l.get(l.size()-1).fallSandwich();
+                if(generalController.getToolBarController().getSum()!=0){
+                    double r=generalController.getToolBarController().getSum()-l.get(l.size()-1).getSandwich().getPrice();
+                    int rest=(int)r;
+                    if(rest>0){
+                        distributeurView.setLabelText(String.valueOf(rest));
+                        generalController.getGeneralView().getRestCoverView().OpenRestCover();
+                    }
+                    generalController.getToolBarController().setSum(0);
+                    distributeurView.setLabelText(String.valueOf(rest));
+                }else{
+                    distributeurView.getScreenWaitMessage().setVisible(false);
+                    distributeurView.getScreenSuccesMessage().setVisible(true);
+                    this.generalController.getGeneralView().getChildren().add(distributeurView.getScreenSuccesMessage());
+                    new Thread(()->resetScreen()).start();
+                }
+                earnedCrud.addEarned(l.get(l.size()-1).getSandwich().getPrice());
             }
         }else if(btn.getLayoutY()==buttonsPositions[1][1]){
             ArrayList<SandwichController> l=sandwichControllers.get(1);
-            if(l.size()==0){
+            if(l.size()==0 || sandwichBoxFull || generalController.getToolBarController().getSum()<l.get(l.size()-1).getSandwich().getPrice() && !cardStatus){
                 String style=btn.getStyle();
                 btn.setStyle(style+"; -fx-background-color: #f5a0a0;");
                 new Thread(()->resetStyle(btn, style)).start();
             }else{
+                sandwichBoxFull=true;
                 l.get(l.size()-1).fallSandwich();
+                if(generalController.getToolBarController().getSum()!=0){
+                    double r=generalController.getToolBarController().getSum()-l.get(l.size()-1).getSandwich().getPrice();
+                    int rest=(int)r;
+                    if(rest>0){
+                        distributeurView.setLabelText(String.valueOf(rest));
+                        generalController.getGeneralView().getRestCoverView().OpenRestCover();
+                    }
+                    generalController.getToolBarController().setSum(0);
+                    distributeurView.setLabelText(String.valueOf(rest));
+                }else{
+                    distributeurView.getScreenWaitMessage().setVisible(false);
+                    distributeurView.getScreenSuccesMessage().setVisible(true);
+                    this.generalController.getGeneralView().getChildren().add(distributeurView.getScreenSuccesMessage());
+                    new Thread(()->resetScreen()).start();
+                }
+                earnedCrud.addEarned(l.get(l.size()-1).getSandwich().getPrice());
             }
         }else if(btn.getLayoutY()==buttonsPositions[2][1]){
             
