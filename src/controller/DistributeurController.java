@@ -1,6 +1,5 @@
 package controller;
 
-import com.sun.glass.events.MouseEvent;
 import controller.main.GeneralController;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -9,15 +8,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.scene.control.Button;
+import model.Boisson;
 import model.CRUD.BoissonCRUD;
 import model.CRUD.EarnedCRUD;
 import model.CRUD.SandwichCRUD;
 import model.CRUD.StockBoissonCRUD;
 import model.CRUD.StockSandwichCRUD;
 import model.Sandwich;
+import model.StockBoisson;
 import model.StockSandwich;
+import view.BoissonView;
 import view.DistributeurView;
 import view.SandwichView;
 
@@ -30,9 +31,11 @@ public class DistributeurController {
     private final BoissonCRUD boissonCRUD;
     private final DistributeurView distributeurView;
     private ArrayList<ArrayList<SandwichController>> sandwichControllers;
+    private ArrayList<ArrayList<BoissonController>> boissonControllers;
     private final GeneralController generalController;
     private final EarnedCRUD earnedCrud;
     private boolean sandwichBoxFull=false;
+    private boolean boissonBoxFull=false;
     
     public DistributeurController(Connection connection, GeneralController generalController){
         this.connection=connection;
@@ -70,8 +73,8 @@ public class DistributeurController {
         code+=b.getText();
         if(count==4){
             for(Button bt:distributeurView.getScreenButtons()){
-                    bt.setVisible(false);
-                }
+                bt.setVisible(false);
+            }
             if(code.equals("1234")){
                 distributeurView.getScreenWaitMessage().setVisible(true);
                 this.generalController.getGeneralView().getChildren().add(distributeurView.getScreenWaitMessage());
@@ -85,11 +88,11 @@ public class DistributeurController {
             code="";
             count=0;
         }
-        System.out.println(code);
     }
     
-    private void initController(){
+    public void initController(){
         sandwichControllers=new ArrayList<ArrayList<SandwichController>>();
+        boissonControllers=new ArrayList<ArrayList<BoissonController>>();
         ArrayList<Button> screenButtons=distributeurView.getScreenButtons();
         for(Button b:screenButtons){
             b.setOnAction(e->screenButtonClicked(b));
@@ -105,6 +108,18 @@ public class DistributeurController {
                 sandwichControllers.get(i).add(new SandwichController(s, connection, this));
             }
             i++;
+        }
+        
+        ArrayList<StockBoisson> lsb=new ArrayList<StockBoisson>();
+        lsb=stockBoissonCRUD.getAllStock();
+        int j=0;
+        for(StockBoisson sb:lsb){
+            boissonControllers.add(new ArrayList<BoissonController>());
+            for(int v=0; v<sb.getQuantity(); v++){
+                Boisson b=boissonCRUD.getBoissonByID(sb.getID());
+                boissonControllers.get(j).add(new BoissonController(b, connection, this));
+            }
+            j++;
         }
         
         ArrayList<Button> buttons=distributeurView.getButtons();
@@ -160,6 +175,8 @@ public class DistributeurController {
                     distributeurView.getScreenSuccesMessage().setVisible(true);
                     this.generalController.getGeneralView().getChildren().add(distributeurView.getScreenSuccesMessage());
                     new Thread(()->resetScreen()).start();
+                    generalController.getToolBarController().setSum(0);
+                    cardStatus=false;
                 }
                 earnedCrud.addEarned(l.get(l.size()-1).getSandwich().getPrice());
             }
@@ -186,33 +203,300 @@ public class DistributeurController {
                     distributeurView.getScreenSuccesMessage().setVisible(true);
                     this.generalController.getGeneralView().getChildren().add(distributeurView.getScreenSuccesMessage());
                     new Thread(()->resetScreen()).start();
+                    generalController.getToolBarController().setSum(0);
+                    cardStatus=false;
                 }
                 earnedCrud.addEarned(l.get(l.size()-1).getSandwich().getPrice());
             }
         }else if(btn.getLayoutY()==buttonsPositions[2][1]){
-            
+            ArrayList<SandwichController> l=sandwichControllers.get(2);
+            if(l.size()==0 || sandwichBoxFull || generalController.getToolBarController().getSum()<l.get(l.size()-1).getSandwich().getPrice() && !cardStatus){
+                String style=btn.getStyle();
+                btn.setStyle(style+"; -fx-background-color: #f5a0a0;");
+                new Thread(()->resetStyle(btn, style)).start();
+            }else{
+                sandwichBoxFull=true;
+                l.get(l.size()-1).fallSandwich();
+                if(generalController.getToolBarController().getSum()!=0){
+                    double r=generalController.getToolBarController().getSum()-l.get(l.size()-1).getSandwich().getPrice();
+                    int rest=(int)r;
+                    if(rest>0){
+                        distributeurView.setLabelText(String.valueOf(rest));
+                        generalController.getGeneralView().getRestCoverView().OpenRestCover();
+                    }
+                    generalController.getToolBarController().setSum(0);
+                    distributeurView.setLabelText(String.valueOf(rest));
+                }else{
+                    distributeurView.getScreenWaitMessage().setVisible(false);
+                    distributeurView.getScreenSuccesMessage().setVisible(true);
+                    this.generalController.getGeneralView().getChildren().add(distributeurView.getScreenSuccesMessage());
+                    new Thread(()->resetScreen()).start();
+                    generalController.getToolBarController().setSum(0);
+                    cardStatus=false;
+                }
+                earnedCrud.addEarned(l.get(l.size()-1).getSandwich().getPrice());
+            }
         }else if(btn.getLayoutY()==buttonsPositions[3][1]){
-            
+            ArrayList<SandwichController> l=sandwichControllers.get(3);
+            if(l.size()==0 || sandwichBoxFull || generalController.getToolBarController().getSum()<l.get(l.size()-1).getSandwich().getPrice() && !cardStatus){
+                String style=btn.getStyle();
+                btn.setStyle(style+"; -fx-background-color: #f5a0a0;");
+                new Thread(()->resetStyle(btn, style)).start();
+            }else{
+                sandwichBoxFull=true;
+                l.get(l.size()-1).fallSandwich();
+                if(generalController.getToolBarController().getSum()!=0){
+                    double r=generalController.getToolBarController().getSum()-l.get(l.size()-1).getSandwich().getPrice();
+                    int rest=(int)r;
+                    if(rest>0){
+                        distributeurView.setLabelText(String.valueOf(rest));
+                        generalController.getGeneralView().getRestCoverView().OpenRestCover();
+                    }
+                    generalController.getToolBarController().setSum(0);
+                    distributeurView.setLabelText(String.valueOf(rest));
+                }else{
+                    distributeurView.getScreenWaitMessage().setVisible(false);
+                    distributeurView.getScreenSuccesMessage().setVisible(true);
+                    this.generalController.getGeneralView().getChildren().add(distributeurView.getScreenSuccesMessage());
+                    new Thread(()->resetScreen()).start();
+                    generalController.getToolBarController().setSum(0);
+                    cardStatus=false;
+                }
+                earnedCrud.addEarned(l.get(l.size()-1).getSandwich().getPrice());
+            }
         }else if(btn.getLayoutY()==buttonsPositions[4][1]){
-            
+            ArrayList<SandwichController> l=sandwichControllers.get(4);
+            if(l.size()==0 || sandwichBoxFull || generalController.getToolBarController().getSum()<l.get(l.size()-1).getSandwich().getPrice() && !cardStatus){
+                String style=btn.getStyle();
+                btn.setStyle(style+"; -fx-background-color: #f5a0a0;");
+                new Thread(()->resetStyle(btn, style)).start();
+            }else{
+                sandwichBoxFull=true;
+                l.get(l.size()-1).fallSandwich();
+                if(generalController.getToolBarController().getSum()!=0){
+                    double r=generalController.getToolBarController().getSum()-l.get(l.size()-1).getSandwich().getPrice();
+                    int rest=(int)r;
+                    if(rest>0){
+                        distributeurView.setLabelText(String.valueOf(rest));
+                        generalController.getGeneralView().getRestCoverView().OpenRestCover();
+                    }
+                    generalController.getToolBarController().setSum(0);
+                    distributeurView.setLabelText(String.valueOf(rest));
+                }else{
+                    distributeurView.getScreenWaitMessage().setVisible(false);
+                    distributeurView.getScreenSuccesMessage().setVisible(true);
+                    this.generalController.getGeneralView().getChildren().add(distributeurView.getScreenSuccesMessage());
+                    new Thread(()->resetScreen()).start();
+                    generalController.getToolBarController().setSum(0);
+                    cardStatus=false;
+                }
+                earnedCrud.addEarned(l.get(l.size()-1).getSandwich().getPrice());
+            }
         }else if(btn.getLayoutY()==buttonsPositions[5][1]){
-            
+            ArrayList<SandwichController> l=sandwichControllers.get(5);
+            if(l.size()==0 || sandwichBoxFull || generalController.getToolBarController().getSum()<l.get(l.size()-1).getSandwich().getPrice() && !cardStatus){
+                String style=btn.getStyle();
+                btn.setStyle(style+"; -fx-background-color: #f5a0a0;");
+                new Thread(()->resetStyle(btn, style)).start();
+            }else{
+                sandwichBoxFull=true;
+                l.get(l.size()-1).fallSandwich();
+                if(generalController.getToolBarController().getSum()!=0){
+                    double r=generalController.getToolBarController().getSum()-l.get(l.size()-1).getSandwich().getPrice();
+                    int rest=(int)r;
+                    if(rest>0){
+                        distributeurView.setLabelText(String.valueOf(rest));
+                        generalController.getGeneralView().getRestCoverView().OpenRestCover();
+                    }
+                    generalController.getToolBarController().setSum(0);
+                    distributeurView.setLabelText(String.valueOf(rest));
+                }else{
+                    distributeurView.getScreenWaitMessage().setVisible(false);
+                    distributeurView.getScreenSuccesMessage().setVisible(true);
+                    this.generalController.getGeneralView().getChildren().add(distributeurView.getScreenSuccesMessage());
+                    new Thread(()->resetScreen()).start();
+                    generalController.getToolBarController().setSum(0);
+                    cardStatus=false;
+                }
+                earnedCrud.addEarned(l.get(l.size()-1).getSandwich().getPrice());
+            }
         }else if(btn.getLayoutY()==buttonsPositions[6][1]){
-            
+            ArrayList<BoissonController> l=boissonControllers.get(0);
+            if(l.size()==0 || boissonBoxFull || generalController.getToolBarController().getSum()<l.get(l.size()-1).getBoisson().getPrice() && !cardStatus){
+                String style=btn.getStyle();
+                btn.setStyle(style+"; -fx-background-color: #f5a0a0;");
+                new Thread(()->resetStyle(btn, style)).start();
+            }else{
+                boissonBoxFull=true;
+                l.get(l.size()-1).fallBoisson();
+                if(generalController.getToolBarController().getSum()!=0){
+                    double r=generalController.getToolBarController().getSum()-l.get(l.size()-1).getBoisson().getPrice();
+                    int rest=(int)r;
+                    if(rest>0){
+                        distributeurView.setLabelText(String.valueOf(rest));
+                        generalController.getGeneralView().getRestCoverView().OpenRestCover();
+                    }
+                    generalController.getToolBarController().setSum(0);
+                    distributeurView.setLabelText(String.valueOf(rest));
+                }else{
+                    distributeurView.getScreenWaitMessage().setVisible(false);
+                    distributeurView.getScreenSuccesMessage().setVisible(true);
+                    this.generalController.getGeneralView().getChildren().add(distributeurView.getScreenSuccesMessage());
+                    new Thread(()->resetScreen()).start();
+                    generalController.getToolBarController().setSum(0);
+                    cardStatus=false;
+                }
+                earnedCrud.addEarned(l.get(l.size()-1).getBoisson().getPrice());
+            }
         }else if(btn.getLayoutY()==buttonsPositions[7][1]){
-            
+            ArrayList<BoissonController> l=boissonControllers.get(1);
+            if(l.size()==0 || boissonBoxFull || generalController.getToolBarController().getSum()<l.get(l.size()-1).getBoisson().getPrice() && !cardStatus){
+                String style=btn.getStyle();
+                btn.setStyle(style+"; -fx-background-color: #f5a0a0;");
+                new Thread(()->resetStyle(btn, style)).start();
+            }else{
+                boissonBoxFull=true;
+                l.get(l.size()-1).fallBoisson();
+                if(generalController.getToolBarController().getSum()!=0){
+                    double r=generalController.getToolBarController().getSum()-l.get(l.size()-1).getBoisson().getPrice();
+                    int rest=(int)r;
+                    if(rest>0){
+                        distributeurView.setLabelText(String.valueOf(rest));
+                        generalController.getGeneralView().getRestCoverView().OpenRestCover();
+                    }
+                    generalController.getToolBarController().setSum(0);
+                    distributeurView.setLabelText(String.valueOf(rest));
+                }else{
+                    distributeurView.getScreenWaitMessage().setVisible(false);
+                    distributeurView.getScreenSuccesMessage().setVisible(true);
+                    this.generalController.getGeneralView().getChildren().add(distributeurView.getScreenSuccesMessage());
+                    new Thread(()->resetScreen()).start();
+                    generalController.getToolBarController().setSum(0);
+                    cardStatus=false;
+                }
+                earnedCrud.addEarned(l.get(l.size()-1).getBoisson().getPrice());
+            }
         }else if(btn.getLayoutY()==buttonsPositions[8][1]){
-            
+            ArrayList<BoissonController> l=boissonControllers.get(2);
+            if(l.size()==0 || boissonBoxFull || generalController.getToolBarController().getSum()<l.get(l.size()-1).getBoisson().getPrice() && !cardStatus){
+                String style=btn.getStyle();
+                btn.setStyle(style+"; -fx-background-color: #f5a0a0;");
+                new Thread(()->resetStyle(btn, style)).start();
+            }else{
+                boissonBoxFull=true;
+                l.get(l.size()-1).fallBoisson();
+                if(generalController.getToolBarController().getSum()!=0){
+                    double r=generalController.getToolBarController().getSum()-l.get(l.size()-1).getBoisson().getPrice();
+                    int rest=(int)r;
+                    if(rest>0){
+                        distributeurView.setLabelText(String.valueOf(rest));
+                        generalController.getGeneralView().getRestCoverView().OpenRestCover();
+                    }
+                    generalController.getToolBarController().setSum(0);
+                    distributeurView.setLabelText(String.valueOf(rest));
+                }else{
+                    distributeurView.getScreenWaitMessage().setVisible(false);
+                    distributeurView.getScreenSuccesMessage().setVisible(true);
+                    this.generalController.getGeneralView().getChildren().add(distributeurView.getScreenSuccesMessage());
+                    new Thread(()->resetScreen()).start();
+                    generalController.getToolBarController().setSum(0);
+                    cardStatus=false;
+                }
+                earnedCrud.addEarned(l.get(l.size()-1).getBoisson().getPrice());
+            }
         }else if(btn.getLayoutY()==buttonsPositions[9][1]){
-            
+            ArrayList<BoissonController> l=boissonControllers.get(3);
+            if(l.size()==0 || boissonBoxFull || generalController.getToolBarController().getSum()<l.get(l.size()-1).getBoisson().getPrice() && !cardStatus){
+                String style=btn.getStyle();
+                btn.setStyle(style+"; -fx-background-color: #f5a0a0;");
+                new Thread(()->resetStyle(btn, style)).start();
+            }else{
+                boissonBoxFull=true;
+                l.get(l.size()-1).fallBoisson();
+                if(generalController.getToolBarController().getSum()!=0){
+                    double r=generalController.getToolBarController().getSum()-l.get(l.size()-1).getBoisson().getPrice();
+                    int rest=(int)r;
+                    if(rest>0){
+                        distributeurView.setLabelText(String.valueOf(rest));
+                        generalController.getGeneralView().getRestCoverView().OpenRestCover();
+                    }
+                    generalController.getToolBarController().setSum(0);
+                    distributeurView.setLabelText(String.valueOf(rest));
+                }else{
+                    distributeurView.getScreenWaitMessage().setVisible(false);
+                    distributeurView.getScreenSuccesMessage().setVisible(true);
+                    this.generalController.getGeneralView().getChildren().add(distributeurView.getScreenSuccesMessage());
+                    new Thread(()->resetScreen()).start();
+                    generalController.getToolBarController().setSum(0);
+                    cardStatus=false;
+                }
+                earnedCrud.addEarned(l.get(l.size()-1).getBoisson().getPrice());
+            }
         }else if(btn.getLayoutY()==buttonsPositions[10][1]){
-            
+            ArrayList<BoissonController> l=boissonControllers.get(4);
+            if(l.size()==0 || boissonBoxFull || generalController.getToolBarController().getSum()<l.get(l.size()-1).getBoisson().getPrice() && !cardStatus){
+                String style=btn.getStyle();
+                btn.setStyle(style+"; -fx-background-color: #f5a0a0;");
+                new Thread(()->resetStyle(btn, style)).start();
+            }else{
+                boissonBoxFull=true;
+                l.get(l.size()-1).fallBoisson();
+                if(generalController.getToolBarController().getSum()!=0){
+                    double r=generalController.getToolBarController().getSum()-l.get(l.size()-1).getBoisson().getPrice();
+                    int rest=(int)r;
+                    if(rest>0){
+                        distributeurView.setLabelText(String.valueOf(rest));
+                        generalController.getGeneralView().getRestCoverView().OpenRestCover();
+                    }
+                    generalController.getToolBarController().setSum(0);
+                    distributeurView.setLabelText(String.valueOf(rest));
+                }else{
+                    distributeurView.getScreenWaitMessage().setVisible(false);
+                    distributeurView.getScreenSuccesMessage().setVisible(true);
+                    this.generalController.getGeneralView().getChildren().add(distributeurView.getScreenSuccesMessage());
+                    new Thread(()->resetScreen()).start();
+                    generalController.getToolBarController().setSum(0);
+                    cardStatus=false;
+                }
+                earnedCrud.addEarned(l.get(l.size()-1).getBoisson().getPrice());
+            }
         }else if(btn.getLayoutY()==buttonsPositions[11][1]){
-            
+            ArrayList<BoissonController> l=boissonControllers.get(5);
+            if(l.size()==0 || boissonBoxFull || generalController.getToolBarController().getSum()<l.get(l.size()-1).getBoisson().getPrice() && !cardStatus){
+                String style=btn.getStyle();
+                btn.setStyle(style+"; -fx-background-color: #f5a0a0;");
+                new Thread(()->resetStyle(btn, style)).start();
+            }else{
+                boissonBoxFull=true;
+                l.get(l.size()-1).fallBoisson();
+                if(generalController.getToolBarController().getSum()!=0){
+                    double r=generalController.getToolBarController().getSum()-l.get(l.size()-1).getBoisson().getPrice();
+                    int rest=(int)r;
+                    if(rest>0){
+                        distributeurView.setLabelText(String.valueOf(rest));
+                        generalController.getGeneralView().getRestCoverView().OpenRestCover();
+                    }
+                    generalController.getToolBarController().setSum(0);
+                    distributeurView.setLabelText(String.valueOf(rest));
+                }else{
+                    distributeurView.getScreenWaitMessage().setVisible(false);
+                    distributeurView.getScreenSuccesMessage().setVisible(true);
+                    this.generalController.getGeneralView().getChildren().add(distributeurView.getScreenSuccesMessage());
+                    new Thread(()->resetScreen()).start();
+                    generalController.getToolBarController().setSum(0);
+                    cardStatus=false;
+                }
+                earnedCrud.addEarned(l.get(l.size()-1).getBoisson().getPrice());
+            }
         }
     }
     
     public void refreshStockSandwich(){
+        initController();
+        generalController.refresh();
+    }
+    
+    public void refreshStockBoisson(){
         initController();
         generalController.refresh();
     }
@@ -234,7 +518,28 @@ public class DistributeurController {
         return lsv;
     }
     
+    public ArrayList<List<BoissonView>> getAllBoissonViews(){
+        ArrayList<List<BoissonView>> lsv=new ArrayList<List<BoissonView>>();
+        int i=0;
+        for(List<BoissonController> ls:boissonControllers){
+            lsv.add(new ArrayList<BoissonView>());
+            for(BoissonController sv:ls){
+                lsv.get(i).add(sv.getBoissonView());
+            }
+            i++;
+        }
+        return lsv;
+    }
+    
     public GeneralController getGeneralController(){
         return generalController;
+    }
+    
+    public boolean getBoissonBoxFull(){
+        return boissonBoxFull;
+    }
+    
+    public void setBoissonBoxFull(boolean b){
+        boissonBoxFull=b;
     }
 }

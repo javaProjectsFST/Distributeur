@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.File;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -19,6 +20,9 @@ import javafx.scene.effect.Light.Point;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 import javafx.util.Pair;
 import model.CRUD.MoneyCRUD;
 import model.Money;
@@ -53,7 +57,7 @@ public class ToolbarController {
     private void login(){
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle("Se Connecter");
-        dialog.setHeaderText("Merci d'entrer votre login et mode de passe/");
+        dialog.setHeaderText("Merci d'entrer votre login et mode de passe:");
 
         // Set the icon (must be included in the project).
 //        dialog.setGraphic(new ImageView(this.getClass().getResource("login.png").toString()));
@@ -104,6 +108,7 @@ public class ToolbarController {
         result.ifPresent(usernamePassword -> {
             if(usernamePassword.getKey().equals("ADMIN") && usernamePassword.getValue().equals("ADMIN")){
                 this.distributeurController.getGeneralController().openMoneyCover();
+                toolBarView.getLoginButton().setVisible(false);
             }
         });
     }
@@ -131,6 +136,12 @@ public class ToolbarController {
                 int index=toolBarView.getMoneyButton().indexOf(button);
                 if(index>-1){
                     if(center.getX()>=toolBarView.getMoneyPoint().getX()&& center.getX()<=(toolBarView.getMoneyPoint().getX()+100) && center.getY()>=toolBarView.getMoneyPoint().getY() && center.getY()<=(toolBarView.getMoneyPoint().getY()+100)){
+                        File audioFile=new File("src/resources/moneySound.mp3");
+                        Media audio=new Media(audioFile.toURI().toString());
+                        MediaPlayer audioPlayer=new MediaPlayer(audio);
+                        audioPlayer.setStopTime(Duration.seconds(1));
+                        audioPlayer.play();
+                        audioPlayer.setOnEndOfMedia(new Thread(()->audioPlayer.dispose()));
                         int value=0;
                         switch (index){
                             case 0:
@@ -162,7 +173,9 @@ public class ToolbarController {
                             b.setVisible(true);
                         }
                         distributeurController.getDistributeurView().getScreenWaitMessage().setVisible(true);
-                        distributeurController.getGeneralController().getGeneralView().getChildren().addAll(distributeurController.getDistributeurView().getScreenButtons());
+                        if(distributeurController.getGeneralController().getGeneralView().getChildren().indexOf(distributeurController.getDistributeurView().getScreenButtons().get(0))<0){
+                            distributeurController.getGeneralController().getGeneralView().getChildren().addAll(distributeurController.getDistributeurView().getScreenButtons());
+                        }
                     }
                     toolBarView.relocateCreditCardButton(((Button)mouseEvent.getSource()));
                 }
@@ -174,8 +187,6 @@ public class ToolbarController {
             public void handle(MouseEvent mouseEvent) {
                 button.setLayoutX(mouseEvent.getSceneX() + p.getX());
                 button.setLayoutY(mouseEvent.getSceneY() + p.getY());
-                System.out.println(button.getLayoutX());
-                System.out.println(button.getLayoutY());
             }
         });
         button.setOnMouseEntered(new EventHandler<MouseEvent>() {

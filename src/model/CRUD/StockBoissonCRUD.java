@@ -53,4 +53,24 @@ public class StockBoissonCRUD {
         }
     }
     
+    public boolean removeBoisson(int ID){
+        try{
+            PreparedStatement prepare=connection.prepareStatement("UPDATE stockboisson SET quantity=quantity-1 WHERE quantity>0 AND ID=?");
+            prepare.setInt(1, ID);
+            return prepare.executeUpdate()==1 ? true : false;
+        }catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public void initStock(){
+        try{
+            PreparedStatement prepare=connection.prepareStatement("update stockboisson set quantity=3");
+            prepare.executeUpdate();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
+    
 }

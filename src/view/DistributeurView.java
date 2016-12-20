@@ -108,16 +108,16 @@ public class DistributeurView{
         buttonsNames=new String[]{
             "Sandwich Boeuf",
             "Panini Omelette",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            ""
+            "Panini Boeuf",
+            "Panini Salami",
+            "Sandwich Omelette",
+            "Sandwich Salade",
+            "Coke",
+            "Water",
+            "Fanta",
+            "Cidre",
+            "Petillante",
+            "Boga"
         };
          
         bgImg=new Image(bgPath);

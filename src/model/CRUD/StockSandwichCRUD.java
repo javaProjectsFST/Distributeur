@@ -65,4 +65,13 @@ public class StockSandwichCRUD {
             return false;
         }
     }
+    
+    public void initStock(){
+        try{
+            PreparedStatement prepare=connection.prepareStatement("update stocksandwich set quantity=3");
+            prepare.executeUpdate();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
 }

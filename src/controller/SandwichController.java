@@ -29,6 +29,18 @@ public class SandwichController {
             case "paniniOmelette":
                 type=1;
                 break;
+            case "PaniniBoeuf":
+                type=2;
+                break;
+            case "PaniniSalami":
+                type=3;
+                break;
+            case "SandwichOmelette":
+                type=4;
+                break;
+            case "SandwichSalade":
+                type=5;
+                break;
             default:
                 break;
         }

@@ -3,14 +3,14 @@ package model;
 public class Boisson {
     private int ID;
     private String boissonName;
-    private double price;
+    private int price;
     private String imgPath;
     
     public Boisson(){
         super();
     }
     
-    public Boisson(int ID, String boissonName, double price, String imgPath){
+    public Boisson(int ID, String boissonName, int price, String imgPath){
         this.ID=ID;
         this.boissonName=boissonName;
         this.price=price;
@@ -25,11 +25,11 @@ public class Boisson {
         this.boissonName = boissonName;
     }
 
-    public double getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 

@@ -25,7 +25,7 @@ public class BoissonCRUD {
                 Boisson b=new Boisson();
                 b.setID(rs.getInt(1));
                 b.setBoissonName(rs.getString(2));
-                b.setPrice(rs.getDouble(3));
+                b.setPrice(rs.getInt(3));
                 b.setImgPath(rs.getString(4));
                 return b;
             }
@@ -45,7 +45,7 @@ public class BoissonCRUD {
                 Boisson b=new Boisson();
                 b.setID(rs.getInt(1));
                 b.setBoissonName(rs.getString(2));
-                b.setPrice(rs.getDouble(3));
+                b.setPrice(rs.getInt(3));
                 b.setImgPath(rs.getString(4));
                 return b;
             }
@@ -65,7 +65,7 @@ public class BoissonCRUD {
                 Boisson b=new Boisson();
                 b.setID(rs.getInt(1));
                 b.setBoissonName(rs.getString(2));
-                b.setPrice(rs.getDouble(3));
+                b.setPrice(rs.getInt(3));
                 b.setImgPath(rs.getString(4));
                 lb.add(b);
             }
