@@ -16,14 +16,14 @@ public class MainClass extends Application{
         try{
             Class.forName("com.mysql.jdbc.Driver");
             //Connection to localhost:3306
-            String url = "jdbc:mysql://localhost:3306/distributeur";
-            String user = "root";
-            String mdp="";
+//            String url = "jdbc:mysql://localhost:3306/distributeur";
+//            String user = "root";
+//            String mdp="";
             
             //Connection to hosted database
-//            String url = "jdbc:mysql://seif.sytes.net:3306/distributeur";
-//            String user = "root";
-//            String mdp="root";
+            String url = "jdbc:mysql://seif.sytes.net:3306/distributeur";
+            String user = "root";
+            String mdp="root";
             
             return DriverManager.getConnection(url, user, mdp);
         }catch(ClassNotFoundException | SQLException e){
