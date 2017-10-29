@@ -1,5 +1,6 @@
 package controller;
 
+import controller.main.MainClass;
 import java.io.File;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -106,7 +107,7 @@ public class ToolbarController {
 
         Optional<Pair<String, String>> result = dialog.showAndWait();
         result.ifPresent(usernamePassword -> {
-            if(usernamePassword.getKey().equals("ADMIN") && usernamePassword.getValue().equals("ADMIN")){
+            if(usernamePassword.getKey().equals(MainClass.ADMIN.getLogin()) && usernamePassword.getValue().equals(MainClass.ADMIN.getMdp())){
                 this.distributeurController.getGeneralController().openMoneyCover();
                 toolBarView.getLoginButton().setVisible(false);
             }

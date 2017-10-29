@@ -7,23 +7,26 @@ import java.sql.SQLException;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import model.Admin;
 
 public class MainClass extends Application{
  
     private static GeneralController generalController;
+    public static final Admin ADMIN = new Admin("Admin", "Admin");
+    public static final String CARDCODE = "12345";
     
     static Connection makeConnection(){
         try{
             Class.forName("com.mysql.jdbc.Driver");
             //Connection to localhost:3306
-//            String url = "jdbc:mysql://localhost:3306/distributeur";
-//            String user = "root";
-//            String mdp="";
+            String url = "jdbc:mysql://localhost:3306/distributeur";
+            String user = "root";
+            String mdp="";
             
             //Connection to hosted database
-            String url = "jdbc:mysql://seif.sytes.net:3306/distributeur";
-            String user = "root";
-            String mdp="root";
+            //String url = "jdbc:mysql://seif.sytes.net:3306/distributeur";
+            //String user = "root";
+            //String mdp="root";
             
             return DriverManager.getConnection(url, user, mdp);
         }catch(ClassNotFoundException | SQLException e){

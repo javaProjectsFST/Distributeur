@@ -1,6 +1,7 @@
 package controller;
 
 import controller.main.GeneralController;
+import controller.main.MainClass;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,11 +72,11 @@ public class DistributeurController {
     private void screenButtonClicked(Button b){
         count++;
         code+=b.getText();
-        if(count==4){
+        if(count==5){
             for(Button bt:distributeurView.getScreenButtons()){
                 bt.setVisible(false);
             }
-            if(code.equals("1234")){
+            if(code.equals(MainClass.CARDCODE)){
                 distributeurView.getScreenWaitMessage().setVisible(true);
                 this.generalController.getGeneralView().getChildren().add(distributeurView.getScreenWaitMessage());
                 cardStatus=true;
